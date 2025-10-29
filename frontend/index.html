@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISim Nursing Assistant - AI-Powered Charting</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <div class="logo-icon">🏥</div>
+                    <div class="logo-text">
+                        <h1>AISim Nursing Assistant</h1>
+                        <p>AI-Powered Charting Solution</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button id="testConnectionBtn" class="btn btn-secondary">Test Connection</button>
+                    <div class="status-indicator" id="statusIndicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <h2>Welcome to AISim Nursing Assistant</h2>
+                    <p>Transform your nursing documentation with AI-powered charting that ensures compliance and accuracy.</p>
+                </section>
+
+                <!-- Chart Type Selection -->
+                <section class="chart-type-section">
+                    <h3>Select Chart Type</h3>
+                    <div class="chart-type-grid" id="chartTypeGrid">
+                        <!-- Chart types will be loaded dynamically -->
+                    </div>
+                </section>
+
+                <!-- Input Form -->
+                <section class="input-form-section">
+                    <form id="nursingForm" class="nursing-form">
+                        <!-- Patient Information -->
+                        <div class="form-section">
+                            <h3>Patient Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="patientName">Patient Name *</label>
+                                    <input type="text" id="patientName" name="patientName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patientAge">Age *</label>
+                                    <input type="number" id="patientAge" name="patientAge" min="0" max="150" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patientGender">Gender *</label>
+                                    <select id="patientGender" name="patientGender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                        <option value="prefer not to say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="roomNumber">Room Number</label>
+                                    <input type="text" id="roomNumber" name="roomNumber">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admissionDate">Admission Date</label>
+                                    <input type="date" id="admissionDate" name="admissionDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="diagnosis">Primary Diagnosis</label>
+                                    <input type="text" id="diagnosis" name="diagnosis">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vital Signs -->
+                        <div class="form-section">
+                            <h3>Vital Signs</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="temperature">Temperature</label>
+                                    <input type="text" id="temperature" name="temperature" placeholder="e.g., 98.6°F">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bloodPressure">Blood Pressure</label>
+                                    <input type="text" id="bloodPressure" name="bloodPressure" placeholder="e.g., 120/80">
+                                </div>
+                                <div class="form-group">
+                                    <label for="heartRate">Heart Rate</label>
+                                    <input type="text" id="heartRate" name="heartRate" placeholder="e.g., 72 bpm">
+                                </div>
+                                <div class="form-group">
+                                    <label for="respiratoryRate">Respiratory Rate</label>
+                                    <input type="text" id="respiratoryRate" name="respiratoryRate" placeholder="e.g., 16/min">
+                                </div>
+                                <div class="form-group">
+                                    <label for="oxygenSaturation">Oxygen Saturation</label>
+                                    <input type="text" id="oxygenSaturation" name="oxygenSaturation" placeholder="e.g., 98%">
+                                </div>
+                                <div class="form-group">
+                                    <label for="painLevel">Pain Level (0-10)</label>
+                                    <input type="number" id="painLevel" name="painLevel" min="0" max="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Assessment -->
+                        <div class="form-section">
+                            <h3>Assessment</h3>
+                            <div class="form-group">
+                                <label for="chiefComplaint">Chief Complaint *</label>
+                                <textarea id="chiefComplaint" name="chiefComplaint" rows="3" required placeholder="Describe the patient's main concern or reason for care"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="symptoms">Symptoms (one per line)</label>
+                                <textarea id="symptoms" name="symptoms" rows="3" placeholder="List each symptom on a new line"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="physicalFindings">Physical Findings</label>
+                                <textarea id="physicalFindings" name="physicalFindings" rows="3" placeholder="Document physical examination findings"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="mentalStatus">Mental Status</label>
+                                <textarea id="mentalStatus" name="mentalStatus" rows="2" placeholder="Document patient's mental status and orientation"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="mobility">Mobility</label>
+                                <textarea id="mobility" name="mobility" rows="2" placeholder="Document patient's mobility status and assistance needed"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="skinCondition">Skin Condition</label>
+                                <textarea id="skinCondition" name="skinCondition" rows="2" placeholder="Document skin assessment findings"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Interventions -->
+                        <div class="form-section">
+                            <h3>Interventions</h3>
+                            <div class="form-group">
+                                <label for="medications">Medications (one per line)</label>
+                                <textarea id="medications" name="medications" rows="3" placeholder="List medications administered"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="treatments">Treatments (one per line)</label>
+                                <textarea id="treatments" name="treatments" rows="3" placeholder="List treatments provided"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="procedures">Procedures (one per line)</label>
+                                <textarea id="procedures" name="procedures" rows="3" placeholder="List procedures performed"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="education">Patient Education (one per line)</label>
+                                <textarea id="education" name="education" rows="3" placeholder="List education provided to patient/family"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Additional Observations -->
+                        <div class="form-section">
+                            <h3>Additional Observations</h3>
+                            <div class="form-group">
+                                <label for="observations">Additional Notes</label>
+                                <textarea id="observations" name="observations" rows="4" placeholder="Any additional observations, concerns, or notes"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="button" id="clearFormBtn" class="btn btn-secondary">Clear Form</button>
+                            <button type="submit" id="generateChartBtn" class="btn btn-primary">
+                                <span class="btn-text">Generate Nursing Chart</span>
+                                <span class="btn-loading" style="display: none;">Generating...</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Results Section -->
+                <section class="results-section" id="resultsSection" style="display: none;">
+                    <h3>Generated Nursing Chart</h3>
+                    <div class="chart-actions">
+                        <button id="downloadChartBtn" class="btn btn-secondary">Download Chart</button>
+                        <button id="printChartBtn" class="btn btn-secondary">Print Chart</button>
+                        <button id="newChartBtn" class="btn btn-primary">Create New Chart</button>
+                    </div>
+                    <div class="chart-content" id="chartContent">
+                        <!-- Generated chart will appear here -->
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 AISim. All rights reserved. | AI-Powered Nursing Documentation</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Generating your nursing chart...</p>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Error</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeErrorModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

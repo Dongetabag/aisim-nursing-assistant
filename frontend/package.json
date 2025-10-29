@@ -1,0 +1,13 @@
+{
+  "name": "aisim-nursing-assistant-frontend",
+  "version": "1.0.0",
+  "description": "AISim Nursing Assistant Frontend",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build step required for static site'",
+    "start": "echo 'Static site - serve index.html'"
+  },
+  "keywords": ["nursing", "charting", "ai", "healthcare"],
+  "author": "AISim",
+  "license": "MIT"
+}
