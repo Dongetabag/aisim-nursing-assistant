@@ -1,16 +1,19 @@
 {
   "version": 2,
-  "name": "aisim-nursing-assistant",
-  "buildCommand": "echo 'Static site - no build required'",
-  "outputDirectory": "frontend",
-  "installCommand": "echo 'No dependencies to install for static site'",
-  "routes": [
+  "builds": [
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "src": "frontend/**",
+      "use": "@vercel/static"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/frontend/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ]
 }

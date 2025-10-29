@@ -187,3 +187,4 @@ Desktop.ini
 # Build outputs
 dist/
 build/
+.vercel
