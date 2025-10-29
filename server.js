@@ -5,6 +5,7 @@ const path = require('path');
 require('dotenv').config();
 
 const chartingRoutes = require('./routes/charting');
+const automationRoutes = require('./routes/automation');
 const geminiService = require('./services/geminiService');
 
 const app = express();
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'frontend')));
 
 // API routes
 app.use('/api/charting', chartingRoutes);
+app.use('/api/automation', automationRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

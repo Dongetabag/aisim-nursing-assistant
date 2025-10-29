@@ -10,5 +10,7 @@
 			"path": "../AISim Automated Ad System"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
 }

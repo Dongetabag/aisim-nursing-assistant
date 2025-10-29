@@ -1315,7 +1315,8 @@ Annual Facility Savings: $500K-$1M in operational efficiency`
                 gender: formData.get('patientGender') || '',
                 roomNumber: formData.get('roomNumber') || '',
                 admissionDate: formData.get('admissionDate') || '',
-                diagnosis: formData.get('diagnosis') || ''
+                diagnosis: formData.get('diagnosis') || '',
+                primaryNurse: formData.get('primaryNurse') || 'Nurse on duty'
             },
             vitalSigns: {
                 temperature: formData.get('temperature') || '',
@@ -1340,7 +1341,12 @@ Annual Facility Savings: $500K-$1M in operational efficiency`
                 education: this.parseTextarea(formData.get('education'))
             },
             observations: formData.get('observations') || '',
-            chartType: this.selectedChartType
+            chartType: this.selectedChartType,
+            
+            // Additional fields for workflow tools
+            operationType: formData.get('operationType') || 'Bed Management',
+            educationTopic: formData.get('educationTopic') || formData.get('diagnosis') || 'General health management',
+            careTeam: formData.get('careTeam') || 'Multi-disciplinary team'
         };
 
         // Remove empty vital signs
@@ -1387,8 +1393,8 @@ Annual Facility Savings: $500K-$1M in operational efficiency`
                 hour: '2-digit', minute: '2-digit'
             })}\n`;
             content += `Chart ID:      ${chartData.chartId}\n`;
-            content += `Chart Type:    ${chartData.inputSummary.chartType.toUpperCase()} ASSESSMENT\n`;
-            content += `Patient:       ${chartData.inputSummary.patientName}\n`;
+            content += `Tool Type:     ${chartData.inputSummary.chartType.toUpperCase()}\n`;
+            content += `Patient:       ${chartData.inputSummary.patientName || 'N/A'}\n`;
             content += `\n\n`;
 
             // CLINICAL ALERTS - Top Priority
@@ -1473,6 +1479,74 @@ Annual Facility Savings: $500K-$1M in operational efficiency`
                 content += `║                  DOCUMENTATION STANDARDS                         ║\n`;
                 content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 content += `${data.documentation}\n\n\n`;
+            }
+
+            // MEDICATION MANAGEMENT SECTIONS
+            if (data.medicationVerification) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                   SIX RIGHTS VERIFICATION                        ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.medicationVerification}\n\n\n`;
+            }
+
+            if (data.drugInteractionCheck) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                  DRUG INTERACTION ANALYSIS                       ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.drugInteractionCheck}\n\n\n`;
+            }
+
+            if (data.administrationChecklist) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║              ADMINISTRATION WORKFLOW CHECKLIST                   ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.administrationChecklist}\n\n\n`;
+            }
+
+            // PATIENT MONITORING SECTIONS
+            if (data.vitalSignsTrends) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                   VITAL SIGNS TREND ANALYSIS                     ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.vitalSignsTrends}\n\n\n`;
+            }
+
+            if (data.automatedAlerts) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                    AUTOMATED ALERT SYSTEM                        ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.automatedAlerts}\n\n\n`;
+            }
+
+            // CARE COORDINATION SECTIONS
+            if (data.careTeamCommunication) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║              MULTI-DISCIPLINARY TEAM COORDINATION                ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.careTeamCommunication}\n\n\n`;
+            }
+
+            if (data.careplanSynchronization) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                   SYNCHRONIZED CARE PLAN                         ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.careplanSynchronization}\n\n\n`;
+            }
+
+            // PATIENT EDUCATION SECTIONS
+            if (data.educationMaterials) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                PERSONALIZED PATIENT EDUCATION                    ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.educationMaterials}\n\n\n`;
+            }
+
+            // OPERATIONAL WORKFLOW SECTIONS
+            if (data.workflowAutomation) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                  WORKFLOW AUTOMATION REPORT                      ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.workflowAutomation}\n\n\n`;
             }
 
             // COMPLIANCE
