@@ -202,6 +202,16 @@ class NursingAssistant {
     generateMockChart(nurseInput) {
         const chartId = 'chart-' + Date.now();
         const timestamp = new Date().toISOString();
+        const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        // Generate clinical alerts based on vital signs
+        const alerts = this.generateClinicalAlerts(nurseInput);
+        
+        // Generate SBAR format
+        const sbar = this.generateSBAR(nurseInput);
+        
+        // Generate quick assessment summary
+        const quickSummary = this.generateQuickSummary(nurseInput);
         
         return {
             chartId: chartId,
@@ -213,68 +223,402 @@ class NursingAssistant {
                 timestamp: timestamp
             },
             chartData: {
+                quickSummary: quickSummary,
+                sbar: sbar,
+                alerts: alerts,
+                
                 nursingAssessment: `COMPREHENSIVE NURSING ASSESSMENT
+Time: ${currentTime}
 
-Patient: ${nurseInput.patientInfo.name}
-Age: ${nurseInput.patientInfo.age} years
-Gender: ${nurseInput.patientInfo.gender}
-Room: ${nurseInput.patientInfo.roomNumber || 'Not specified'}
-Admission Date: ${nurseInput.patientInfo.admissionDate || 'Not specified'}
+PATIENT DEMOGRAPHICS:
+Name: ${nurseInput.patientInfo.name}
+Age: ${nurseInput.patientInfo.age} years | Gender: ${nurseInput.patientInfo.gender}
+Room: ${nurseInput.patientInfo.roomNumber || 'Not specified'} | Admission: ${nurseInput.patientInfo.admissionDate || 'Not specified'}
 Primary Diagnosis: ${nurseInput.patientInfo.diagnosis || 'Not specified'}
 
-VITAL SIGNS:
-${Object.entries(nurseInput.vitalSigns || {}).map(([key, value]) => `- ${key}: ${value}`).join('\n') || 'Not documented'}
+CURRENT VITAL SIGNS: [Time: ${currentTime}]
+${this.formatVitalSigns(nurseInput.vitalSigns)}
 
-ASSESSMENT FINDINGS:
+FOCUSED ASSESSMENT:
 Chief Complaint: ${nurseInput.assessment.chiefComplaint}
-Symptoms: ${nurseInput.assessment.symptoms ? nurseInput.assessment.symptoms.join(', ') : 'None documented'}
-Physical Findings: ${nurseInput.assessment.physicalFindings || 'Not documented'}
-Mental Status: ${nurseInput.assessment.mentalStatus || 'Not documented'}
-Mobility: ${nurseInput.assessment.mobility || 'Not documented'}
-Skin Condition: ${nurseInput.assessment.skinCondition || 'Not documented'}
 
-INTERVENTIONS PROVIDED:
-${Object.entries(nurseInput.interventions || {}).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('\n') || 'None documented'}
+Presenting Symptoms:
+${nurseInput.assessment.symptoms ? nurseInput.assessment.symptoms.map(s => `  • ${s}`).join('\n') : '  • None documented'}
 
-ADDITIONAL OBSERVATIONS:
+Physical Examination:
+${nurseInput.assessment.physicalFindings || 'Not documented'}
+
+Neurological Status:
+${nurseInput.assessment.mentalStatus || 'Not documented'}
+
+Mobility/Functional Status:
+${nurseInput.assessment.mobility || 'Not documented'}
+
+Skin/Integumentary:
+${nurseInput.assessment.skinCondition || 'Not documented'}
+
+INTERVENTIONS PERFORMED: [Time: ${currentTime}]
+${this.formatInterventions(nurseInput.interventions)}
+
+CLINICAL OBSERVATIONS:
 ${nurseInput.observations || 'None documented'}`,
 
-                nursingDiagnosis: [
-                    'Impaired Gas Exchange related to respiratory condition',
-                    'Risk for Infection related to compromised immune system',
-                    'Acute Pain related to physical condition',
-                    'Knowledge Deficit related to treatment plan'
-                ],
+                nursingDiagnosis: this.generateNursingDiagnoses(nurseInput),
 
-                nursingInterventions: [
-                    'Monitor vital signs every 4 hours',
-                    'Assess pain level using 0-10 scale',
-                    'Provide comfort measures as needed',
-                    'Educate patient on condition and treatment',
-                    'Implement fall prevention measures',
-                    'Document all assessments and interventions'
-                ],
+                nursingInterventions: this.generateInterventionPlan(nurseInput),
 
-                evaluation: `Patient response to interventions will be evaluated based on:
-- Vital signs stability
-- Pain level reduction
-- Understanding of treatment plan
-- Ability to perform self-care activities
-- Overall condition improvement
+                evaluation: `EVALUATION OF CARE: [Time: ${currentTime}]
 
-Expected outcomes include improved comfort, understanding, and condition management.`,
+Patient Response Indicators:
+  ✓ Vital signs: Monitor for stability and trend improvement
+  ✓ Pain management: Assess effectiveness using 0-10 scale
+  ✓ Patient understanding: Verify comprehension of treatment plan
+  ✓ Self-care ability: Evaluate independence in ADLs
+  ✓ Overall condition: Track progress toward discharge goals
 
-                documentation: `All assessments, interventions, and patient responses have been documented according to nursing standards. Chart includes comprehensive patient data, nursing diagnoses, interventions, and evaluation criteria. Documentation meets regulatory compliance requirements for legal protection and quality assurance.`,
+Expected Outcomes (Next 2-4 hours):
+  • Vital signs within acceptable parameters for patient
+  • Pain reduced to manageable level (≤ 4/10)
+  • Patient demonstrates understanding of care plan
+  • No adverse reactions to interventions
+  • Improved comfort and satisfaction with care
 
-                complianceNotes: `This chart meets the following compliance standards:
-- HIPAA: Patient confidentiality maintained
-- Joint Commission: Standardized terminology used
-- CMS: Medical necessity documented
-- State Board of Nursing: Professional standards followed`,
+Re-assessment scheduled: ${this.getNextAssessmentTime(nurseInput.chartType)}`,
 
-                chartSummary: `Comprehensive nursing assessment completed for ${nurseInput.patientInfo.name}. Patient presents with ${nurseInput.assessment.chiefComplaint}. Assessment findings documented with appropriate nursing diagnoses and interventions identified. Care plan established with evaluation criteria. All documentation completed per nursing standards and regulatory requirements.`
+                handoffCommunication: this.generateHandoffNotes(nurseInput, currentTime),
+
+                documentation: `DOCUMENTATION STANDARDS MET:
+
+✓ Comprehensive assessment completed per facility protocol
+✓ All subjective and objective data documented
+✓ Nursing diagnoses evidence-based and appropriate
+✓ Interventions clearly defined with rationale
+✓ Patient response documented
+✓ Safety measures implemented and verified
+✓ Time-stamped entries for accountability
+✓ Proper medical terminology utilized throughout
+
+Chart completed by AI-assisted documentation system.
+Reviewed for accuracy and completeness: ${currentTime}`,
+
+                complianceNotes: `REGULATORY COMPLIANCE VERIFICATION:
+
+✓ HIPAA Compliance:
+  • Patient confidentiality maintained throughout documentation
+  • No unauthorized disclosure of protected health information
+  • Secure documentation methods employed
+
+✓ Joint Commission Standards:
+  • Standardized terminology and abbreviations used
+  • Patient safety goals addressed (falls, infection control)
+  • Clear communication documented
+  • Pain assessment completed using standardized scale
+
+✓ CMS Requirements:
+  • Medical necessity clearly documented
+  • Detailed assessment supports care level
+  • Quality indicators addressed
+  • Cost-effective care delivery documented
+
+✓ State Board of Nursing:
+  • Professional standards of practice followed
+  • Scope of practice maintained
+  • Accountability demonstrated
+  • Patient advocacy evident in documentation`,
+
+                chartSummary: `CLINICAL SUMMARY:
+
+${nurseInput.patientInfo.age}-year-old ${nurseInput.patientInfo.gender} patient presents with ${nurseInput.assessment.chiefComplaint}. 
+Current assessment reveals ${this.summarizeFindings(nurseInput)}. 
+
+Evidence-based nursing diagnoses identified and appropriate interventions initiated. 
+Patient response being monitored with re-evaluation scheduled. 
+
+All documentation meets regulatory compliance standards for ${nurseInput.chartType} assessment.
+
+Status: ${this.determinePatientStatus(nurseInput)} | Priority: ${this.determinePriority(nurseInput)}
+Next Action: ${this.getNextAction(nurseInput)}`
             }
         };
+    }
+
+    generateClinicalAlerts(input) {
+        const alerts = [];
+        const vs = input.vitalSigns || {};
+        
+        // Check vital signs for abnormalities
+        if (vs.painLevel && vs.painLevel > 7) {
+            alerts.push('🔴 HIGH PRIORITY: Severe pain level (' + vs.painLevel + '/10) - Immediate intervention needed');
+        } else if (vs.painLevel && vs.painLevel > 4) {
+            alerts.push('🟡 MODERATE: Pain level (' + vs.painLevel + '/10) - Continue pain management');
+        }
+        
+        // Add more alert logic based on symptoms
+        if (input.assessment.symptoms && input.assessment.symptoms.length > 0) {
+            const urgentSymptoms = ['chest pain', 'difficulty breathing', 'confusion', 'bleeding', 'fall'];
+            const hasUrgent = input.assessment.symptoms.some(s => 
+                urgentSymptoms.some(us => s.toLowerCase().includes(us))
+            );
+            if (hasUrgent) {
+                alerts.push('🔴 URGENT: Critical symptoms present - Notify physician if not already aware');
+            }
+        }
+        
+        if (alerts.length === 0) {
+            alerts.push('✓ No critical alerts at this time - Continue routine monitoring');
+        }
+        
+        return alerts;
+    }
+
+    generateSBAR(input) {
+        return `SBAR COMMUNICATION FORMAT (For Handoff/Physician Communication):
+
+S - SITUATION:
+  ${input.patientInfo.name}, ${input.patientInfo.age}yo ${input.patientInfo.gender}
+  Room: ${input.patientInfo.roomNumber || 'N/A'} | Diagnosis: ${input.patientInfo.diagnosis || 'N/A'}
+  Reporting: ${input.assessment.chiefComplaint}
+
+B - BACKGROUND:
+  • Admission Date: ${input.patientInfo.admissionDate || 'Not specified'}
+  • Current Medications: ${input.interventions?.medications?.join(', ') || 'None documented'}
+  • Recent Treatments: ${input.interventions?.treatments?.join(', ') || 'None documented'}
+  • Relevant History: ${input.assessment.physicalFindings || 'See chart'}
+
+A - ASSESSMENT:
+  • Vital Signs: ${this.summarizeVitals(input.vitalSigns)}
+  • Pain Level: ${input.vitalSigns?.painLevel || 'Not assessed'}/10
+  • Mental Status: ${input.assessment.mentalStatus || 'Not documented'}
+  • Primary Concern: ${input.assessment.chiefComplaint}
+  • Clinical Impression: ${this.getClinicalImpression(input)}
+
+R - RECOMMENDATION:
+  • Continue current interventions
+  • Monitor vital signs every 2-4 hours
+  • Re-assess pain management effectiveness
+  • ${this.getSpecificRecommendations(input)}
+  • Notify if condition changes or deteriorates`;
+    }
+
+    generateQuickSummary(input) {
+        return `QUICK-SCAN SUMMARY (30-Second Overview):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Patient: ${input.patientInfo.name} | Age: ${input.patientInfo.age} | Room: ${input.patientInfo.roomNumber || 'N/A'}
+
+Status: ${this.determinePatientStatus(input)} | Priority: ${this.determinePriority(input)}
+
+Chief Complaint: ${input.assessment.chiefComplaint}
+
+Vitals: ${this.summarizeVitals(input.vitalSigns)} | Pain: ${input.vitalSigns?.painLevel || 'N/A'}/10
+
+Key Actions Today:
+${this.getKeyActions(input)}
+
+Next Assessment: ${this.getNextAssessmentTime(input.chartType)}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    }
+
+    formatVitalSigns(vs) {
+        if (!vs || Object.keys(vs).length === 0) return '  No vital signs documented';
+        
+        const formatted = [];
+        if (vs.temperature) formatted.push(`  • Temperature: ${vs.temperature}`);
+        if (vs.bloodPressure) formatted.push(`  • Blood Pressure: ${vs.bloodPressure}`);
+        if (vs.heartRate) formatted.push(`  • Heart Rate: ${vs.heartRate}`);
+        if (vs.respiratoryRate) formatted.push(`  • Respiratory Rate: ${vs.respiratoryRate}`);
+        if (vs.oxygenSaturation) formatted.push(`  • O2 Saturation: ${vs.oxygenSaturation}`);
+        if (vs.painLevel !== undefined) formatted.push(`  • Pain Level: ${vs.painLevel}/10`);
+        
+        return formatted.join('\n') || '  No vital signs documented';
+    }
+
+    formatInterventions(interventions) {
+        if (!interventions) return '  None documented';
+        
+        const formatted = [];
+        if (interventions.medications?.length) {
+            formatted.push('Medications Administered:');
+            interventions.medications.forEach(m => formatted.push(`  • ${m}`));
+        }
+        if (interventions.treatments?.length) {
+            formatted.push('Treatments Provided:');
+            interventions.treatments.forEach(t => formatted.push(`  • ${t}`));
+        }
+        if (interventions.procedures?.length) {
+            formatted.push('Procedures Performed:');
+            interventions.procedures.forEach(p => formatted.push(`  • ${p}`));
+        }
+        if (interventions.education?.length) {
+            formatted.push('Patient Education:');
+            interventions.education.forEach(e => formatted.push(`  • ${e}`));
+        }
+        
+        return formatted.length ? formatted.join('\n') : '  None documented';
+    }
+
+    generateNursingDiagnoses(input) {
+        const diagnoses = [];
+        
+        // Pain-related
+        if (input.vitalSigns?.painLevel && input.vitalSigns.painLevel > 0) {
+            diagnoses.push('Acute Pain related to ' + (input.patientInfo.diagnosis || 'current condition') + 
+                          ' as evidenced by pain rating of ' + input.vitalSigns.painLevel + '/10');
+        }
+        
+        // Mobility-related
+        if (input.assessment.mobility && input.assessment.mobility.toLowerCase().includes('impaired')) {
+            diagnoses.push('Impaired Physical Mobility related to ' + (input.patientInfo.diagnosis || 'current condition'));
+            diagnoses.push('Risk for Falls related to impaired mobility status');
+        }
+        
+        // Knowledge deficit
+        diagnoses.push('Knowledge Deficit related to ' + (input.patientInfo.diagnosis || 'condition') + 
+                      ' and treatment plan as evidenced by need for education');
+        
+        // Risk for infection
+        diagnoses.push('Risk for Infection related to invasive procedures and compromised immune system');
+        
+        return diagnoses;
+    }
+
+    generateInterventionPlan(input) {
+        const interventions = [];
+        const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        interventions.push(`[${time}] Monitor and document vital signs every 2-4 hours or per facility protocol`);
+        
+        if (input.vitalSigns?.painLevel && input.vitalSigns.painLevel > 0) {
+            interventions.push(`[${time}] Assess pain level using 0-10 scale every 2 hours; administer pain medication as ordered`);
+            interventions.push(`[${time}] Implement non-pharmacological comfort measures (positioning, ice/heat, relaxation)`);
+        }
+        
+        interventions.push(`[${time}] Assess and document patient response to all interventions`);
+        interventions.push(`[${time}] Implement fall prevention measures per facility protocol`);
+        interventions.push(`[${time}] Provide patient/family education regarding condition and treatment plan`);
+        interventions.push(`[${time}] Maintain infection control measures and monitor for signs of infection`);
+        interventions.push(`[${time}] Ensure call light within reach and patient knows how to use`);
+        interventions.push(`[${time}] Document all care provided and patient responses in medical record`);
+        
+        return interventions;
+    }
+
+    generateHandoffNotes(input, time) {
+        return `SHIFT HANDOFF NOTES:
+
+PATIENT OVERVIEW:
+${input.patientInfo.name} in Room ${input.patientInfo.roomNumber || 'N/A'}
+${input.patientInfo.age}yo ${input.patientInfo.gender} • Dx: ${input.patientInfo.diagnosis || 'See chart'}
+
+CURRENT STATUS:
+• Chief Complaint: ${input.assessment.chiefComplaint}
+• Vital Signs: ${this.summarizeVitals(input.vitalSigns)}
+• Pain Level: ${input.vitalSigns?.painLevel || 'Not assessed'}/10
+• Activity Level: ${input.assessment.mobility || 'Not documented'}
+
+WHAT WAS DONE THIS SHIFT:
+${this.summarizeShiftWork(input)}
+
+PENDING TASKS FOR NEXT SHIFT:
+• Re-assess pain and vital signs
+• Continue monitoring patient response to interventions
+• Follow up on patient education needs
+• Document any changes in condition
+• ${this.getShiftSpecificTasks(input)}
+
+PATIENT/FAMILY CONCERNS:
+${input.observations || 'None expressed at this time'}
+
+CODE STATUS: Full Code (verify current status in chart)`;
+    }
+
+    // Helper methods
+    summarizeVitals(vs) {
+        if (!vs || Object.keys(vs).length === 0) return 'Not documented';
+        const parts = [];
+        if (vs.bloodPressure) parts.push('BP: ' + vs.bloodPressure);
+        if (vs.heartRate) parts.push('HR: ' + vs.heartRate);
+        if (vs.temperature) parts.push('T: ' + vs.temperature);
+        if (vs.oxygenSaturation) parts.push('O2: ' + vs.oxygenSaturation);
+        return parts.join(', ') || 'See detailed vitals';
+    }
+
+    getClinicalImpression(input) {
+        return `Patient stable with ${input.assessment.chiefComplaint}. Continue current plan of care with close monitoring.`;
+    }
+
+    getSpecificRecommendations(input) {
+        const recs = [];
+        if (input.vitalSigns?.painLevel > 5) recs.push('Consider pain medication adjustment');
+        if (input.assessment.symptoms?.length > 0) recs.push('Monitor symptom progression');
+        return recs.join('\n  • ') || 'Continue routine care';
+    }
+
+    determinePatientStatus(input) {
+        if (input.vitalSigns?.painLevel > 7) return '🔴 CRITICAL - Immediate Attention';
+        if (input.vitalSigns?.painLevel > 4) return '🟡 MODERATE - Close Monitoring';
+        return '🟢 STABLE - Routine Care';
+    }
+
+    determinePriority(input) {
+        if (input.chartType === 'incident') return 'HIGH';
+        if (input.vitalSigns?.painLevel > 7) return 'HIGH';
+        if (input.vitalSigns?.painLevel > 4) return 'MEDIUM';
+        return 'ROUTINE';
+    }
+
+    getKeyActions(input) {
+        const actions = [];
+        if (input.interventions?.medications?.length) 
+            actions.push(`  • Medications: ${input.interventions.medications.length} administered`);
+        if (input.interventions?.treatments?.length) 
+            actions.push(`  • Treatments: ${input.interventions.treatments.join(', ')}`);
+        if (input.vitalSigns?.painLevel) 
+            actions.push(`  • Pain management: Assessed and addressed`);
+        return actions.length ? actions.join('\n') : '  • See full assessment below';
+    }
+
+    getNextAssessmentTime(chartType) {
+        const times = {
+            'admission': '1 hour',
+            'shift': '4 hours',
+            'incident': '1 hour',
+            'discharge': 'N/A - Discharge pending',
+            'assessment': '2-4 hours'
+        };
+        return times[chartType] || '2-4 hours';
+    }
+
+    summarizeFindings(input) {
+        return `${input.assessment.chiefComplaint} with current interventions in place. See detailed assessment for complete clinical picture.`;
+    }
+
+    getNextAction(input) {
+        if (input.chartType === 'discharge') return 'Complete discharge paperwork and education';
+        if (input.vitalSigns?.painLevel > 5) return 'Re-assess pain management in 1 hour';
+        return 'Continue routine monitoring per protocol';
+    }
+
+    summarizeShiftWork(input) {
+        const work = [];
+        work.push(`• Initial assessment completed at shift start`);
+        if (input.interventions?.medications?.length) 
+            work.push(`• Administered ${input.interventions.medications.length} medication(s)`);
+        if (input.interventions?.treatments?.length) 
+            work.push(`• Provided treatments: ${input.interventions.treatments.join(', ')}`);
+        if (input.interventions?.education?.length) 
+            work.push(`• Patient education provided`);
+        work.push(`• Vital signs monitored and documented`);
+        work.push(`• Patient comfort and safety maintained`);
+        return work.join('\n');
+    }
+
+    getShiftSpecificTasks(input) {
+        const tasks = [];
+        if (input.chartType === 'admission') tasks.push('Complete admission orientation');
+        if (input.vitalSigns?.painLevel) tasks.push('Re-evaluate pain management strategy');
+        return tasks.join('\n• ') || 'No specific pending tasks';
     }
 
     convertFormData(formData) {
@@ -361,16 +705,47 @@ Expected outcomes include improved comfort, understanding, and condition managem
             content += `Patient:       ${chartData.inputSummary.patientName}\n`;
             content += `\n\n`;
 
+            // CLINICAL ALERTS - Top Priority
+            if (data.alerts && data.alerts.length > 0) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                        CLINICAL ALERTS                           ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                data.alerts.forEach(alert => {
+                    content += `${alert}\n\n`;
+                });
+                content += `\n`;
+            }
+
+            // QUICK SUMMARY - For Busy Nurses
+            if (data.quickSummary) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                   QUICK-SCAN SUMMARY                             ║\n`;
+                content += `║                   (30-Second Overview)                           ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.quickSummary}\n\n\n`;
+            }
+
+            // SBAR COMMUNICATION
+            if (data.sbar) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                    SBAR COMMUNICATION                            ║\n`;
+                content += `║              (For Handoff/Physician Reports)                     ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.sbar}\n\n\n`;
+            }
+
+            // COMPREHENSIVE ASSESSMENT
             if (data.nursingAssessment) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
-                content += `║                      NURSING ASSESSMENT                          ║\n`;
+                content += `║                  COMPREHENSIVE ASSESSMENT                        ║\n`;
                 content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 content += `${data.nursingAssessment}\n\n\n`;
             }
 
+            // NURSING DIAGNOSES
             if (data.nursingDiagnosis && data.nursingDiagnosis.length > 0) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
-                content += `║                      NURSING DIAGNOSES                           ║\n`;
+                content += `║                   EVIDENCE-BASED DIAGNOSES                       ║\n`;
                 content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 data.nursingDiagnosis.forEach((diagnosis, index) => {
                     content += `  ${index + 1}. ${diagnosis}\n\n`;
@@ -378,16 +753,18 @@ Expected outcomes include improved comfort, understanding, and condition managem
                 content += `\n`;
             }
 
+            // NURSING INTERVENTIONS
             if (data.nursingInterventions && data.nursingInterventions.length > 0) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
-                content += `║                    NURSING INTERVENTIONS                         ║\n`;
+                content += `║                  TIME-STAMPED INTERVENTIONS                      ║\n`;
                 content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 data.nursingInterventions.forEach((intervention, index) => {
-                    content += `  ${index + 1}. ${intervention}\n\n`;
+                    content += `  ${intervention}\n`;
                 });
-                content += `\n`;
+                content += `\n\n`;
             }
 
+            // EVALUATION
             if (data.evaluation) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
                 content += `║                    EVALUATION & OUTCOMES                         ║\n`;
@@ -395,6 +772,16 @@ Expected outcomes include improved comfort, understanding, and condition managem
                 content += `${data.evaluation}\n\n\n`;
             }
 
+            // HANDOFF NOTES
+            if (data.handoffCommunication) {
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                    SHIFT HANDOFF NOTES                           ║\n`;
+                content += `║                  (Copy for Shift Report)                         ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.handoffCommunication}\n\n\n`;
+            }
+
+            // DOCUMENTATION STANDARDS
             if (data.documentation) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
                 content += `║                  DOCUMENTATION STANDARDS                         ║\n`;
@@ -402,6 +789,7 @@ Expected outcomes include improved comfort, understanding, and condition managem
                 content += `${data.documentation}\n\n\n`;
             }
 
+            // COMPLIANCE
             if (data.complianceNotes) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
                 content += `║                    COMPLIANCE VERIFICATION                       ║\n`;
@@ -409,9 +797,10 @@ Expected outcomes include improved comfort, understanding, and condition managem
                 content += `${data.complianceNotes}\n\n\n`;
             }
 
+            // CLINICAL SUMMARY
             if (data.chartSummary) {
                 content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
-                content += `║                        CHART SUMMARY                             ║\n`;
+                content += `║                      CLINICAL SUMMARY                            ║\n`;
                 content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 content += `${data.chartSummary}\n\n\n`;
             }
@@ -420,6 +809,7 @@ Expected outcomes include improved comfort, understanding, and condition managem
             content += `─────────────────────────────────────────────────────────────────────\n`;
             content += `                    AISim Nursing Assistant\n`;
             content += `           AI-Powered Clinical Documentation System\n`;
+            content += `          Designed for Efficiency • Built for Compliance\n`;
             content += `─────────────────────────────────────────────────────────────────────\n`;
         } else {
             content = 'Error: No chart data available';
