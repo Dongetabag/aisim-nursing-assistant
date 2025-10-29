@@ -345,53 +345,82 @@ Expected outcomes include improved comfort, understanding, and condition managem
         if (chartData.chartData) {
             const data = chartData.chartData;
             
-            content += `AISIM NURSING CHART\n`;
-            content += `Generated: ${new Date(chartData.generatedAt).toLocaleString()}\n`;
-            content += `Chart ID: ${chartData.chartId}\n`;
-            content += `Chart Type: ${chartData.inputSummary.chartType.toUpperCase()}\n`;
-            content += `Patient: ${chartData.inputSummary.patientName}\n`;
-            content += `\n${'='.repeat(60)}\n\n`;
+            // Premium header with AISim branding
+            content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+            content += `║              AISIM NURSING ASSISTANT - CLINICAL CHART            ║\n`;
+            content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+            
+            content += `CHART INFORMATION\n`;
+            content += `─────────────────────────────────────────────────────────────────────\n`;
+            content += `Generated:     ${new Date(chartData.generatedAt).toLocaleString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', 
+                hour: '2-digit', minute: '2-digit'
+            })}\n`;
+            content += `Chart ID:      ${chartData.chartId}\n`;
+            content += `Chart Type:    ${chartData.inputSummary.chartType.toUpperCase()} ASSESSMENT\n`;
+            content += `Patient:       ${chartData.inputSummary.patientName}\n`;
+            content += `\n\n`;
 
             if (data.nursingAssessment) {
-                content += `NURSING ASSESSMENT:\n`;
-                content += `${data.nursingAssessment}\n\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                      NURSING ASSESSMENT                          ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.nursingAssessment}\n\n\n`;
             }
 
             if (data.nursingDiagnosis && data.nursingDiagnosis.length > 0) {
-                content += `NURSING DIAGNOSIS:\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                      NURSING DIAGNOSES                           ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 data.nursingDiagnosis.forEach((diagnosis, index) => {
-                    content += `${index + 1}. ${diagnosis}\n`;
+                    content += `  ${index + 1}. ${diagnosis}\n\n`;
                 });
                 content += `\n`;
             }
 
             if (data.nursingInterventions && data.nursingInterventions.length > 0) {
-                content += `NURSING INTERVENTIONS:\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                    NURSING INTERVENTIONS                         ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
                 data.nursingInterventions.forEach((intervention, index) => {
-                    content += `${index + 1}. ${intervention}\n`;
+                    content += `  ${index + 1}. ${intervention}\n\n`;
                 });
                 content += `\n`;
             }
 
             if (data.evaluation) {
-                content += `EVALUATION:\n`;
-                content += `${data.evaluation}\n\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                    EVALUATION & OUTCOMES                         ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.evaluation}\n\n\n`;
             }
 
             if (data.documentation) {
-                content += `DOCUMENTATION:\n`;
-                content += `${data.documentation}\n\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                  DOCUMENTATION STANDARDS                         ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.documentation}\n\n\n`;
             }
 
             if (data.complianceNotes) {
-                content += `COMPLIANCE NOTES:\n`;
-                content += `${data.complianceNotes}\n\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                    COMPLIANCE VERIFICATION                       ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.complianceNotes}\n\n\n`;
             }
 
             if (data.chartSummary) {
-                content += `CHART SUMMARY:\n`;
-                content += `${data.chartSummary}\n\n`;
+                content += `╔═══════════════════════════════════════════════════════════════════╗\n`;
+                content += `║                        CHART SUMMARY                             ║\n`;
+                content += `╚═══════════════════════════════════════════════════════════════════╝\n\n`;
+                content += `${data.chartSummary}\n\n\n`;
             }
+            
+            // Premium footer
+            content += `─────────────────────────────────────────────────────────────────────\n`;
+            content += `                    AISim Nursing Assistant\n`;
+            content += `           AI-Powered Clinical Documentation System\n`;
+            content += `─────────────────────────────────────────────────────────────────────\n`;
         } else {
             content = 'Error: No chart data available';
         }
