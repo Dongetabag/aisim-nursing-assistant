@@ -65,35 +65,109 @@ class NursingAssistant {
 
     async loadChartTypes() {
         try {
+            // Premium SVG icons with glass morphism design
+            const svgIcons = {
+                admission: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-admission" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(100,200,255,0.3);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(100,200,255,0.1);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="10" y="14" width="28" height="26" rx="2" fill="url(#grad-admission)" stroke="rgba(100,200,255,0.5)" stroke-width="1.5"/>
+                    <rect x="14" y="18" width="6" height="6" fill="rgba(100,200,255,0.2)" stroke="rgba(100,200,255,0.4)" stroke-width="1"/>
+                    <rect x="22" y="18" width="6" height="6" fill="rgba(100,200,255,0.2)" stroke="rgba(100,200,255,0.4)" stroke-width="1"/>
+                    <rect x="30" y="18" width="6" height="6" fill="rgba(100,200,255,0.2)" stroke="rgba(100,200,255,0.4)" stroke-width="1"/>
+                    <path d="M24 28 L24 36 M20 32 L28 32" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>`,
+                shift: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-shift" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" style="stop-color:rgba(100,255,100,0.2);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(100,255,100,0.4);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="14" y="26" width="6" height="12" rx="1" fill="url(#grad-shift)" stroke="rgba(100,255,100,0.6)" stroke-width="1.5"/>
+                    <rect x="21" y="20" width="6" height="18" rx="1" fill="url(#grad-shift)" stroke="rgba(100,255,100,0.6)" stroke-width="1.5"/>
+                    <rect x="28" y="14" width="6" height="24" rx="1" fill="url(#grad-shift)" stroke="rgba(100,255,100,0.6)" stroke-width="1.5"/>
+                    <line x1="12" y1="40" x2="36" y2="40" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                </svg>`,
+                incident: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-incident" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(255,200,100,0.3);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(255,200,100,0.1);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M24 10 L38 36 L10 36 Z" fill="url(#grad-incident)" stroke="rgba(255,200,100,0.6)" stroke-width="1.5" stroke-linejoin="round"/>
+                    <circle cx="24" cy="30" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                    <line x1="24" y1="19" x2="24" y2="26" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+                </svg>`,
+                discharge: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-discharge" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(150,120,255,0.3);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(150,120,255,0.1);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M16 24 L16 38 L32 38 L32 24" fill="url(#grad-discharge)" stroke="rgba(150,120,255,0.5)" stroke-width="1.5"/>
+                    <path d="M12 24 L24 14 L36 24" fill="none" stroke="rgba(150,120,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="21" y="30" width="6" height="8" rx="1" fill="rgba(150,120,255,0.2)" stroke="rgba(150,120,255,0.4)" stroke-width="1"/>
+                    <rect x="19" y="26" width="4" height="3" fill="rgba(150,120,255,0.2)" stroke="rgba(150,120,255,0.4)" stroke-width="1"/>
+                    <rect x="25" y="26" width="4" height="3" fill="rgba(150,120,255,0.2)" stroke="rgba(150,120,255,0.4)" stroke-width="1"/>
+                </svg>`,
+                assessment: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-assessment" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(255,120,180,0.3);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(255,120,180,0.1);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="14" y="10" width="20" height="30" rx="2" fill="url(#grad-assessment)" stroke="rgba(255,120,180,0.5)" stroke-width="1.5"/>
+                    <rect x="18" y="6" width="12" height="6" rx="2" fill="rgba(255,120,180,0.2)" stroke="rgba(255,120,180,0.5)" stroke-width="1.5"/>
+                    <line x1="18" y1="18" x2="30" y2="18" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="18" y1="23" x2="30" y2="23" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="18" y1="28" x2="26" y2="28" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="19" cy="33" r="1" fill="rgba(255,255,255,0.6)"/>
+                    <circle cx="23" cy="33" r="1" fill="rgba(255,255,255,0.6)"/>
+                    <circle cx="27" cy="33" r="1" fill="rgba(255,255,255,0.6)"/>
+                </svg>`
+            };
+
             // For Vercel deployment, we'll use static data
             const templates = {
                 admission: {
                     name: 'Admission Assessment',
                     description: 'Comprehensive admission assessment and initial care plan',
+                    icon: svgIcons.admission,
                     requiredFields: ['patientInfo', 'assessment', 'vitalSigns'],
                     optionalFields: ['interventions', 'observations']
                 },
                 shift: {
                     name: 'Shift Assessment',
                     description: 'Ongoing patient assessment and care documentation',
+                    icon: svgIcons.shift,
                     requiredFields: ['patientInfo', 'assessment'],
                     optionalFields: ['vitalSigns', 'interventions', 'observations']
                 },
                 incident: {
                     name: 'Incident Report',
                     description: 'Documentation of patient incidents or unusual events',
+                    icon: svgIcons.incident,
                     requiredFields: ['patientInfo', 'assessment'],
                     optionalFields: ['vitalSigns', 'interventions', 'observations']
                 },
                 discharge: {
                     name: 'Discharge Planning',
                     description: 'Patient discharge assessment and care instructions',
+                    icon: svgIcons.discharge,
                     requiredFields: ['patientInfo', 'assessment'],
                     optionalFields: ['interventions', 'observations']
                 },
                 assessment: {
                     name: 'General Assessment',
                     description: 'General patient assessment and care documentation',
+                    icon: svgIcons.assessment,
                     requiredFields: ['patientInfo', 'assessment'],
                     optionalFields: ['vitalSigns', 'interventions', 'observations']
                 }
@@ -114,7 +188,8 @@ class NursingAssistant {
             card.className = 'chart-type-card';
             card.dataset.type = key;
             
-            const icon = this.getChartTypeIcon(key);
+            // Use the premium SVG icon from template, fallback to emoji if not available
+            const icon = template.icon || this.getChartTypeIcon(key);
             
             card.innerHTML = `
                 <div class="icon">${icon}</div>
