@@ -292,6 +292,20 @@ body {
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chart-type-card.workflow-tool {
+  border-color: rgba(100,200,255,0.12);
+}
+
+.chart-type-card.workflow-tool:hover {
+  border-color: rgba(100,200,255,0.25);
+  box-shadow: 0 15px 40px rgba(100,200,255,0.1);
 }
 
 .chart-type-card p {
