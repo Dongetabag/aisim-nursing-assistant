@@ -1,11 +1,13 @@
 const express = require('express');
 const geminiService = require('../services/geminiService');
 const { v4: uuidv4 } = require('uuid');
+const { chartGenerationLimiter, validateChartInput, handleValidationErrors } = require('../middleware/security');
+const { auditLog } = require('../middleware/logger');
 
 const router = express.Router();
 
-// Generate nursing chart
-router.post('/generate', async (req, res) => {
+// Generate nursing chart with rate limiting and validation
+router.post('/generate', chartGenerationLimiter, validateChartInput, handleValidationErrors, async (req, res) => {
   try {
     const { nurseInput } = req.body;
 
@@ -17,10 +19,19 @@ router.post('/generate', async (req, res) => {
     }
 
     const result = await geminiService.generateNursingChart(nurseInput);
-    
+
     // Add unique chart ID
     result.chartId = uuidv4();
     result.generatedAt = new Date().toISOString();
+
+    // Audit log for HIPAA compliance
+    auditLog('chart_generated', req.ip, {
+      chartId: result.chartId,
+      chartType: nurseInput.chartType,
+      patientInitial: nurseInput.patientInfo?.name?.charAt(0) || 'N/A',
+      ip: req.ip,
+      timestamp: result.generatedAt,
+    });
 
     res.json({
       success: true,
